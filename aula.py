@@ -1,8 +1,8 @@
-from aula import Dash, html, dcc, Input, Output
+from aula import dash, html, dcc, Input, Output
 import plotly.express as px
 import pandas as pd
 
-app = aula.Dash(__aula__)
+app = aula.dash(__aula__)
 #app = Dash(__dash__)
 
 # assume you have a "long-form" data frame
