@@ -1,3 +1,3 @@
 dash==2.6.0
 pandas
-gunicorn app:app --workers 3 --threads 2
+gunicorn aula:app
