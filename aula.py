@@ -41,5 +41,5 @@ def update_output(value):
         fig = px.bar(tabela_filtrada, x="Produto", y="Quantidade", color="ID Loja", barmode="group")
     return fig
 
-if __name__ == '__main__':
+if __dash__ == '__main__':
     app.run(debug=True)
