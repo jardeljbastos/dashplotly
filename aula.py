@@ -1,8 +1,8 @@
-from dash import Dash, html, dcc, Input, Output
+from aula import Dash, html, dcc, Input, Output
 import plotly.express as px
 import pandas as pd
 
-app = dash.Dash(__dash__)
+app = aula.Dash(__aula__)
 #app = Dash(__dash__)
 
 # assume you have a "long-form" data frame
@@ -42,5 +42,5 @@ def update_output(value):
         fig = px.bar(tabela_filtrada, x="Produto", y="Quantidade", color="ID Loja", barmode="group")
     return fig
 
-if __dash__ == '__main__':
+if __aula__ == '__main__':
     app.run(debug=True)
