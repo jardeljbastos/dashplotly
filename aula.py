@@ -2,7 +2,7 @@ from dash import Dash, html, dcc, Input, Output
 import plotly.express as px
 import pandas as pd
 
-app = Dash(__aula.py__)
+app = Dash(__aula__)
 
 # assume you have a "long-form" data frame
 # see https://plotly.com/python/px-arguments/ for more options
