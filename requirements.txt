@@ -1,3 +1,5 @@
-dash==2.6.0
+dash
 pandas
+plotly
+openpyxl  # para ler arquivos Excel
 gunicorn
