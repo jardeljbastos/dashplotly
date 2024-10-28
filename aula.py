@@ -36,8 +36,8 @@ fig.update_layout(
 app.layout = html.Div(children=[
     html.H1(children='Análise de Gênero dos Candidatos do ENEM 2023',
             style={'textAlign': 'center', 'color': '#503D36', 'marginBottom': 30}
-           ),
-    
+            ),
+
     html.Div(children='''
         Distribuição dos candidatos por sexo no ENEM 2023
     ''', style={'textAlign': 'center', 'marginBottom': 30}),
@@ -46,18 +46,23 @@ app.layout = html.Div(children=[
     dcc.Graph(id='grafico_sexo', figure=fig)
 ])
 
+
 @app.callback(
     Output('grafico_sexo', 'figure'),
     Input('lista_sexo', 'value')
 )
 def update_output(value):
     if value == "Todos os Sexos":
-        fig = px.bar(df['TP_SEXO'].value_counts().reset_index(), x='index', y='TP_SEXO', title='Distribuição de Candidatos por Sexo - ENEM 2023', labels={'index': 'Sexo', 'TP_SEXO': 'Número de Candidatos'}, color='index', text='TP_SEXO')
+        fig = px.bar(df['TP_SEXO'].value_counts().reset_index(), x='index', y='TP_SEXO',
+                     title='Distribuição de Candidatos por Sexo - ENEM 2023',
+                     labels={'index': 'Sexo', 'TP_SEXO': 'Número de Candidatos'}, color='index', text='TP_SEXO')
     else:
         tabela_filtrada = df.loc[df['TP_SEXO'] == value, :]
-        fig = px.bar(tabela_filtrada, x='TP_SEXO', y='TP_SEXO', title=f'Distribuição de {value} no ENEM 2023', labels={'x': 'Candidato', 'y': 'Número de Candidatos'}, color='TP_SEXO', text='TP_SEXO')
+        fig = px.bar(tabela_filtrada, x='TP_SEXO', y='TP_SEXO', title=f'Distribuição de {value} no ENEM 2023',
+                     labels={'x': 'Candidato', 'y': 'Número de Candidatos'}, color='TP_SEXO', text='TP_SEXO')
 
     return fig
+
 
 # Para o deploy no Render, remova ou comente o seguinte bloco
 if __name__ == '__main__':
