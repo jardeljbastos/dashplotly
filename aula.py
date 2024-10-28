@@ -3,7 +3,8 @@ import plotly.express as px
 import pandas as pd
 
 # Inicialização do app
-app = Dash(__name__)
+#find app = Dash(__name__)
+app = dash.Dash(__name__)
 
 # Configurar o servidor
 server = app.server
