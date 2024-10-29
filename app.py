@@ -27,16 +27,19 @@ mapa_sexo = {
 # Converter os códigos para descrições
 df['Sexo'] = df['TP_SEXO'].map(mapa_sexo)
 
+# Criar o DataFrame para o gráfico
+df_graph = df['Sexo'].value_counts().reset_index()
+df_graph.columns = ['Sexo', 'Quantidade']  # Renomeando as colunas
+
 # Criar o gráfico de barras
 fig = px.bar(
-    df['Sexo'].value_counts().reset_index(),
-    x='index',
-    y='Sexo',
+    df_graph,
+    x='Sexo',
+    y='Quantidade',
     title='Distribuição de Candidatos por Sexo - ENEM 2023',
-    labels={'index': 'Sexo', 'Sexo': 'Número de Candidatos'},
-    color='index',
+    color='Sexo',
     color_discrete_map={'Masculino': '#2E86C1', 'Feminino': '#E74C3C'},
-    text='Sexo'
+    text='Quantidade'
 )
 
 # Atualizar layout do gráfico
