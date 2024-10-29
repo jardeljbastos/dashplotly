@@ -20,8 +20,8 @@ df = pd.read_excel("ENEMDados2023.xls", engine='xlrd')
 
 # Criar um dicionário para mapear os códigos para descrições
 mapa_sexo = {
-    'M': 'Masculino',
-    'F': 'Feminino'
+    'Masculino': 'Masculino',
+    'Feminino': 'Feminino'
 }
 
 # Converter os códigos para descrições
