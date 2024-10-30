@@ -75,7 +75,7 @@ app.layout = html.Div(
                 'marginTop': '20px',
                 'marginBottom': '20px',
                 'fontFamily': 'Arial, sans-serif'
-                'flex': '1'
+                #'flex': '1'
             }
         ),
                 html.Img(
