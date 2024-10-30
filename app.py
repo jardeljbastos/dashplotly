@@ -56,17 +56,43 @@ fig.update_layout(
 # Layout da aplicação
 app.layout = html.Div(
     children=[
+         # Header com as imagens
+        html.Div(
+            className='header',
+            children=[
+                html.Img(
+                    src='/assets/ENEM.png',
+                    style={
+                        'height': '100px',
+                        'marginRight': '20px'
+                    }
+                ),
         html.H1(
             children='Análise de Gênero dos Candidatos do ENEM 2023',
-           # html.Img(src=dash.get_asset_url('ENEM.png')),
             style={
                 'textAlign': 'center',
                 'color': '#2C3E50',
                 'marginTop': '20px',
                 'marginBottom': '20px',
                 'fontFamily': 'Arial, sans-serif'
+                'flex': '1'
             }
         ),
+                html.Img(
+                    src='/assets/Univesp.png',
+                    style={
+                        'height': '100px',
+                        'marginLeft': '20px'
+                    }
+                ),
+            ],
+            style={
+                'display': 'flex',
+                'justifyContent': 'center',
+                'alignItems': 'center',
+                'padding': '20px'
+            }
+        ),                
         html.Div(
             children='''Visualização da distribuição dos candidatos por sexo no ENEM 2023''',
             style={
