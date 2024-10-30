@@ -1,7 +1,7 @@
 # app.py
 import pandas as pd
 import plotly.express as px
-from dash import Dash, html, dcc
+from dash import Dash, html, dcc, callback, Input, Output
 from flask import Flask
 
 # Criar o servidor Flask
@@ -27,36 +27,42 @@ mapa_sexo = {
 # Converter os códigos para descrições
 df['Sexo'] = df['TP_SEXO'].map(mapa_sexo)
 
-# Criar o DataFrame para o gráfico
-df_graph = df['Sexo'].value_counts().reset_index()
-df_graph.columns = ['Sexo', 'Quantidade']  # Renomeando as colunas
-
-# Criar o gráfico de barras
-fig = px.bar(
-    df_graph,
-    x='Sexo',
-    y='Quantidade',
-    title='Distribuição de Candidatos por Sexo - ENEM 2023',
-    color='Sexo',
-    color_discrete_map={'Masculino': '#2E86C1', 'Feminino': '#E74C3C'},
-    text='Quantidade'
-)
-
-# Atualizar layout do gráfico
-fig.update_traces(textposition='outside')
-fig.update_layout(
-    xaxis_title="Sexo",
-    yaxis_title="Número de Candidatos",
-    showlegend=False,
-    plot_bgcolor='white',
-    paper_bgcolor='white',
-    font=dict(size=12)
-)
+# Função para criar o gráfico
+def create_graph(selected_sex='Todos'):
+    if selected_sex == 'Todos':
+        filtered_df = df
+    else:
+        filtered_df = df[df['Sexo'] == selected_sex]
+    
+    df_graph = filtered_df['Sexo'].value_counts().reset_index()
+    df_graph.columns = ['Sexo', 'Quantidade']
+    
+    fig = px.bar(
+        df_graph,
+        x='Sexo',
+        y='Quantidade',
+        title=f'Distribuição de Candidatos por Sexo - ENEM 2023 ({selected_sex})',
+        color='Sexo',
+        color_discrete_map={'Masculino': '#2E86C1', 'Feminino': '#E74C3C'},
+        text='Quantidade'
+    )
+    
+    fig.update_traces(textposition='outside')
+    fig.update_layout(
+        xaxis_title="Sexo",
+        yaxis_title="Número de Candidatos",
+        showlegend=False,
+        plot_bgcolor='white',
+        paper_bgcolor='white',
+        font=dict(size=12)
+    )
+    
+    return fig
 
 # Layout da aplicação
 app.layout = html.Div(
     children=[
-         # Header com as imagens
+        # Header com as imagens
         html.Div(
             className='header',
             children=[
@@ -67,17 +73,17 @@ app.layout = html.Div(
                         'marginRight': '20px'
                     }
                 ),
-        html.H1(
-            children='Análise de Gênero dos Candidatos do ENEM 2023',
-            style={
-                'textAlign': 'center',
-                'color': '#2C3E50',
-                'marginTop': '20px',
-                'marginBottom': '20px',
-                'fontFamily': 'Arial, sans-serif'
-                #'flex': '1'
-            }
-        ),
+                html.H1(
+                    children='Análise de Gênero dos Candidatos do ENEM 2023',
+                    style={
+                        'textAlign': 'center',
+                        'color': '#2C3E50',
+                        'marginTop': '20px',
+                        'marginBottom': '20px',
+                        'fontFamily': 'Arial, sans-serif',
+                        'flex': '1'
+                    }
+                ),
                 html.Img(
                     src='/assets/Univesp.png',
                     style={
@@ -92,7 +98,7 @@ app.layout = html.Div(
                 'alignItems': 'center',
                 'padding': '20px'
             }
-        ),                
+        ),
         html.Div(
             children='''Visualização da distribuição dos candidatos por sexo no ENEM 2023''',
             style={
@@ -101,9 +107,40 @@ app.layout = html.Div(
                 'marginBottom': '30px'
             }
         ),
+        # Dropdown para seleção do sexo
+        html.Div(
+            children=[
+                html.Label(
+                    'Selecione o Sexo:',
+                    style={
+                        'marginRight': '10px',
+                        'fontWeight': 'bold',
+                        'color': '#2C3E50'
+                    }
+                ),
+                dcc.Dropdown(
+                    id='sex-dropdown',
+                    options=[
+                        {'label': 'Todos', 'value': 'Todos'},
+                        {'label': 'Masculino', 'value': 'Masculino'},
+                        {'label': 'Feminino', 'value': 'Feminino'}
+                    ],
+                    value='Todos',
+                    style={
+                        'width': '200px'
+                    }
+                )
+            ],
+            style={
+                'display': 'flex',
+                'justifyContent': 'center',
+                'alignItems': 'center',
+                'marginBottom': '20px'
+            }
+        ),
         dcc.Graph(
             id='grafico-sexo',
-            figure=fig,
+            figure=create_graph(),
             style={'height': '600px'}
         )
     ],
@@ -112,6 +149,14 @@ app.layout = html.Div(
         'backgroundColor': '#F8F9F9'
     }
 )
+
+# Callback para atualizar o gráfico quando o dropdown for alterado
+@callback(
+    Output('grafico-sexo', 'figure'),
+    Input('sex-dropdown', 'value')
+)
+def update_graph(selected_sex):
+    return create_graph(selected_sex)
 
 # Configuração do servidor
 server = app.server
