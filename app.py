@@ -16,7 +16,7 @@ def before_first_request():
     pass
 
 # Ler o arquivo do ENEM
-df = pd.read_excel("ENEMDados2023.xlsx")
+df = pd.read_excel("ENEMDados2023.xlsx", engine='openpyxl')
 
 # Criar um dicionário para mapear os códigos para descrições
 mapa_sexo = {
