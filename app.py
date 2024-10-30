@@ -58,7 +58,7 @@ app.layout = html.Div(
     children=[
         html.H1(
             children='Análise de Gênero dos Candidatos do ENEM 2023',
-            html.Img(src=dash.get_asset_url('ENEM.png')),
+           # html.Img(src=dash.get_asset_url('ENEM.png')),
             style={
                 'textAlign': 'center',
                 'color': '#2C3E50',
