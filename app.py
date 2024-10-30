@@ -56,13 +56,11 @@ fig.update_layout(
 # Layout da aplicação
 app.layout = html.Div(
     children=[
-        html.H1(
         html.Img(src=dash.get_asset_url('ENEM.png'))
     ],
     style={
         'padding': '20px',
-        'backgroundColor': '#F8F9F9'}
-)
+        'backgroundColor': '#F8F9F9'},
     
         html.H1(
             children='Análise de Gênero dos Candidatos do ENEM 2023',
