@@ -34,9 +34,18 @@ mapa_cor_raca = {
     6: 'Não dispõe de informação'
 }
 
+mapa_estado_civil = {
+    0: 'Não informado',
+    1: 'Solteiro(a)',
+    2: 'Casado(a)/Mora com companheiro(a)',
+    3: 'Divorciado(a)/Desquitado(a)/Separado(a)',
+    4: 'Viúvo(a)'
+}
+
 # Converter os códigos para descrições
 df['Sexo'] = df['TP_SEXO'].map(mapa_sexo)
 df['Cor/Raça'] = df['TP_COR_RACA'].map(mapa_cor_raca)
+df['Estado Civil'] = df['TP_ESTADO_CIVIL'].map(mapa_estado_civil)
 
 # Função para criar o gráfico de sexo
 def create_sex_graph(selected_sex='Todos'):
@@ -80,7 +89,6 @@ def create_race_graph(selected_sex='Todos'):
     df_graph = filtered_df['Cor/Raça'].value_counts().reset_index()
     df_graph.columns = ['Cor/Raça', 'Quantidade']
     
-    # Cores personalizadas para cada categoria
     color_map = {
         'Não declarado': '#808080',
         'Branca': '#E6E6E6',
@@ -104,6 +112,48 @@ def create_race_graph(selected_sex='Todos'):
     fig.update_traces(textposition='outside')
     fig.update_layout(
         xaxis_title="Cor/Raça",
+        yaxis_title="Número de Candidatos",
+        showlegend=True,
+        plot_bgcolor='white',
+        paper_bgcolor='white',
+        font=dict(size=12),
+        xaxis={'tickangle': 45}
+    )
+    
+    return fig
+
+# Função para criar o gráfico de estado civil
+def create_civil_status_graph(selected_sex='Todos'):
+    if selected_sex == 'Todos':
+        filtered_df = df
+    else:
+        filtered_df = df[df['Sexo'] == selected_sex]
+    
+    df_graph = filtered_df['Estado Civil'].value_counts().reset_index()
+    df_graph.columns = ['Estado Civil', 'Quantidade']
+    
+    # Cores personalizadas para estado civil
+    color_map = {
+        'Não informado': '#808080',
+        'Solteiro(a)': '#3498DB',
+        'Casado(a)/Mora com companheiro(a)': '#2ECC71',
+        'Divorciado(a)/Desquitado(a)/Separado(a)': '#E74C3C',
+        'Viúvo(a)': '#9B59B6'
+    }
+    
+    fig = px.bar(
+        df_graph,
+        x='Estado Civil',
+        y='Quantidade',
+        title=f'Distribuição de Candidatos por Estado Civil - ENEM 2023 ({selected_sex})',
+        color='Estado Civil',
+        color_discrete_map=color_map,
+        text='Quantidade'
+    )
+    
+    fig.update_traces(textposition='outside')
+    fig.update_layout(
+        xaxis_title="Estado Civil",
         yaxis_title="Número de Candidatos",
         showlegend=True,
         plot_bgcolor='white',
@@ -155,7 +205,7 @@ app.layout = html.Div(
             }
         ),
         html.Div(
-            children='''Visualização da distribuição dos candidatos por Sexo e Cor/Raça no ENEM 2023''',
+            children='''Visualização da distribuição dos candidatos por Sexo, Cor/Raça e Estado Civil no ENEM 2023''',
             style={
                 'textAlign': 'center',
                 'color': '#7F8C8D',
@@ -204,6 +254,11 @@ app.layout = html.Div(
                 id='grafico-raca',
                 figure=create_race_graph(),
                 style={'height': '500px'}
+            ),
+            dcc.Graph(
+                id='grafico-estado-civil',
+                figure=create_civil_status_graph(),
+                style={'height': '500px'}
             )
         ])
     ],
@@ -216,11 +271,12 @@ app.layout = html.Div(
 # Callbacks para atualizar os gráficos quando o dropdown for alterado
 @callback(
     [Output('grafico-sexo', 'figure'),
-     Output('grafico-raca', 'figure')],
+     Output('grafico-raca', 'figure'),
+     Output('grafico-estado-civil', 'figure')],
     Input('sex-dropdown', 'value')
 )
 def update_graphs(selected_sex):
-    return create_sex_graph(selected_sex), create_race_graph(selected_sex)
+    return create_sex_graph(selected_sex), create_race_graph(selected_sex), create_civil_status_graph(selected_sex)
 
 # Configuração do servidor
 server = app.server
