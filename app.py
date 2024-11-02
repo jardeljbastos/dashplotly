@@ -1,4 +1,3 @@
-# app.py
 import pandas as pd
 import plotly.express as px
 from dash import Dash, html, dcc, callback, Input, Output
@@ -122,7 +121,7 @@ def create_race_graph(selected_sex='Todos'):
     
     return fig
 
-# Função para criar o gráfico de estado civil
+# Função para criar o gráfico de estado civil (atualizada para pizza)
 def create_civil_status_graph(selected_sex='Todos'):
     if selected_sex == 'Todos':
         filtered_df = df
@@ -131,6 +130,10 @@ def create_civil_status_graph(selected_sex='Todos'):
     
     df_graph = filtered_df['Estado Civil'].value_counts().reset_index()
     df_graph.columns = ['Estado Civil', 'Quantidade']
+    
+    # Calcular percentuais
+    total = df_graph['Quantidade'].sum()
+    df_graph['Percentual'] = (df_graph['Quantidade'] / total * 100).round(2)
     
     # Cores personalizadas para estado civil
     color_map = {
@@ -141,25 +144,39 @@ def create_civil_status_graph(selected_sex='Todos'):
         'Viúvo(a)': '#9B59B6'
     }
     
-    fig = px.bar(
+    fig = px.pie(
         df_graph,
-        x='Estado Civil',
-        y='Quantidade',
+        values='Quantidade',
+        names='Estado Civil',
         title=f'Distribuição de Candidatos por Estado Civil - ENEM 2023 ({selected_sex})',
         color='Estado Civil',
         color_discrete_map=color_map,
-        text='Quantidade'
+        hover_data=['Percentual'],
+        custom_data=['Quantidade', 'Percentual']
     )
     
-    fig.update_traces(textposition='outside')
+    # Atualizar o texto mostrado no gráfico
+    fig.update_traces(
+        textposition='inside',
+        textinfo='label+percent',
+        hovertemplate="<b>%{label}</b><br>" +
+                     "Quantidade: %{customdata[0]:,.0f}<br>" +
+                     "Percentual: %{customdata[1]:.2f}%<br>"
+    )
+    
     fig.update_layout(
-        xaxis_title="Estado Civil",
-        yaxis_title="Número de Candidatos",
         showlegend=True,
         plot_bgcolor='white',
         paper_bgcolor='white',
         font=dict(size=12),
-        xaxis={'tickangle': 45}
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=-0.2,
+            xanchor="center",
+            x=0.5
+        ),
+        margin=dict(t=80, b=120, l=60, r=60)
     )
     
     return fig
