@@ -181,6 +181,58 @@ def create_civil_status_graph(selected_sex='Todos'):
     
     return fig
 
+def create_age_histogram(selected_sex='Todos'):
+    if selected_sex == 'Todos':
+        filtered_df = df
+    else:
+        filtered_df = df[df['Sexo'] == selected_sex]
+
+    # Criar os bins para as faixas etárias
+    bins = [-1, 18, 21, 25, 30, 40, 50, 60, 70, float('inf')]
+    labels = ['Menor de 18 anos', 'Menor de 18 anos', 'Entre 18 e 21 anos', 'Entre 22 e 25 anos',
+              'Entre 26 e 30 anos', 'Entre 31 e 40 anos', 'Entre 41 e 50 anos', 'Entre 51 e 60 anos',
+              'Entre 61 e 70 anos', 'Maior de 70 anos']
+
+    # Aplicar a classificação por faixa etária
+    filtered_df['Faixa Etária'] = pd.cut(filtered_df['TP_FAIXA_ETARIA'], bins=bins, labels=labels)
+
+    # Contar a quantidade de candidatos por faixa etária
+    age_counts = filtered_df['Faixa Etária'].value_counts().reset_index()
+    age_counts.columns = ['Faixa Etária', 'Quantidade']
+
+    # Criar o gráfico de histograma
+    fig = px.bar(
+        age_counts,
+        x='Faixa Etária',
+        y='Quantidade',
+        title=f'Distribuição de Candidatos por Faixa Etária - ENEM 2023 ({selected_sex})',
+        color='Faixa Etária',
+        color_discrete_map={
+            'Menor de 18 anos': '#3498DB',
+            'Entre 18 e 21 anos': '#2ECC71',
+            'Entre 22 e 25 anos': '#E74C3C',
+            'Entre 26 e 30 anos': '#9B59B6',
+            'Entre 31 e 40 anos': '#F1C40F',
+            'Entre 41 e 50 anos': '#A569BD',
+            'Entre 51 e 60 anos': '#5499C7',
+            'Entre 61 e 70 anos': '#45B39D',
+            'Maior de 70 anos': '#D35400'
+        },
+        text='Quantidade'
+    )
+
+    fig.update_traces(textposition='outside')
+    fig.update_layout(
+        xaxis_title="Faixa Etária",
+        yaxis_title="Número de Candidatos",
+        showlegend=False,
+        plot_bgcolor='white',
+        paper_bgcolor='white',
+        font=dict(size=12)
+    )
+
+    return fig
+
 # Layout da aplicação
 app.layout = html.Div(
     children=[
