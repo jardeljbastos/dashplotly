@@ -78,7 +78,7 @@ def create_sex_graph(selected_sex='Todos'):
     
     return fig
 
-# Função para criar o gráfico de cor/raça
+# Função para criar o gráfico de cor/raça (modificada para pizza)
 def create_race_graph(selected_sex='Todos'):
     if selected_sex == 'Todos':
         filtered_df = df
@@ -87,6 +87,10 @@ def create_race_graph(selected_sex='Todos'):
     
     df_graph = filtered_df['Cor/Raça'].value_counts().reset_index()
     df_graph.columns = ['Cor/Raça', 'Quantidade']
+    
+    # Calcular percentuais
+    total = df_graph['Quantidade'].sum()
+    df_graph['Percentual'] = (df_graph['Quantidade'] / total * 100).round(2)
     
     color_map = {
         'Não declarado': '#808080',
@@ -98,58 +102,12 @@ def create_race_graph(selected_sex='Todos'):
         'Não dispõe de informação': '#D3D3D3'
     }
     
-    fig = px.bar(
-        df_graph,
-        x='Cor/Raça',
-        y='Quantidade',
-        title=f'Distribuição de Candidatos por Cor/Raça - ENEM 2023 ({selected_sex})',
-        color='Cor/Raça',
-        color_discrete_map=color_map,
-        text='Quantidade'
-    )
-    
-    fig.update_traces(textposition='outside')
-    fig.update_layout(
-        xaxis_title="Cor/Raça",
-        yaxis_title="Número de Candidatos",
-        showlegend=True,
-        plot_bgcolor='white',
-        paper_bgcolor='white',
-        font=dict(size=12),
-        xaxis={'tickangle': 45}
-    )
-    
-    return fig
-
-# Função para criar o gráfico de estado civil (atualizada para pizza)
-def create_civil_status_graph(selected_sex='Todos'):
-    if selected_sex == 'Todos':
-        filtered_df = df
-    else:
-        filtered_df = df[df['Sexo'] == selected_sex]
-    
-    df_graph = filtered_df['Estado Civil'].value_counts().reset_index()
-    df_graph.columns = ['Estado Civil', 'Quantidade']
-    
-    # Calcular percentuais
-    total = df_graph['Quantidade'].sum()
-    df_graph['Percentual'] = (df_graph['Quantidade'] / total * 100).round(2)
-    
-    # Cores personalizadas para estado civil
-    color_map = {
-        'Não informado': '#808080',
-        'Solteiro(a)': '#3498DB',
-        'Casado(a)/Mora com companheiro(a)': '#2ECC71',
-        'Divorciado(a)/Desquitado(a)/Separado(a)': '#E74C3C',
-        'Viúvo(a)': '#9B59B6'
-    }
-    
     fig = px.pie(
         df_graph,
         values='Quantidade',
-        names='Estado Civil',
-        title=f'Distribuição de Candidatos por Estado Civil - ENEM 2023 ({selected_sex})',
-        color='Estado Civil',
+        names='Cor/Raça',
+        title=f'Distribuição de Candidatos por Cor/Raça - ENEM 2023 ({selected_sex})',
+        color='Cor/Raça',
         color_discrete_map=color_map,
         hover_data=['Percentual'],
         custom_data=['Quantidade', 'Percentual']
@@ -177,6 +135,48 @@ def create_civil_status_graph(selected_sex='Todos'):
             x=0.5
         ),
         margin=dict(t=80, b=120, l=60, r=60)
+    )
+    
+    return fig
+
+# Função para criar o gráfico de estado civil (modificada para barras)
+def create_civil_status_graph(selected_sex='Todos'):
+    if selected_sex == 'Todos':
+        filtered_df = df
+    else:
+        filtered_df = df[df['Sexo'] == selected_sex]
+    
+    df_graph = filtered_df['Estado Civil'].value_counts().reset_index()
+    df_graph.columns = ['Estado Civil', 'Quantidade']
+    
+    # Cores personalizadas para estado civil
+    color_map = {
+        'Não informado': '#808080',
+        'Solteiro(a)': '#3498DB',
+        'Casado(a)/Mora com companheiro(a)': '#2ECC71',
+        'Divorciado(a)/Desquitado(a)/Separado(a)': '#E74C3C',
+        'Viúvo(a)': '#9B59B6'
+    }
+    
+    fig = px.bar(
+        df_graph,
+        x='Estado Civil',
+        y='Quantidade',
+        title=f'Distribuição de Candidatos por Estado Civil - ENEM 2023 ({selected_sex})',
+        color='Estado Civil',
+        color_discrete_map=color_map,
+        text='Quantidade'
+    )
+    
+    fig.update_traces(textposition='outside')
+    fig.update_layout(
+        xaxis_title="Estado Civil",
+        yaxis_title="Número de Candidatos",
+        showlegend=False,
+        plot_bgcolor='white',
+        paper_bgcolor='white',
+        font=dict(size=12),
+        xaxis={'tickangle': 45}
     )
     
     return fig
