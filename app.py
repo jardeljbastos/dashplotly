@@ -237,7 +237,7 @@ def create_age_histogram(selected_sex='Todos'):
         title=f'Distribuição de Candidatos por Faixa Etária - ENEM 2023 ({selected_sex})',
         color='Faixa Etária',
         color_discrete_map={
-            'Menor de 18 anos': '#3498DB',
+            'Menor de 18 anos': '#8B4513',
             'Entre 18 e 21 anos': '#2ECC71',
             'Entre 22 e 25 anos': '#E74C3C',
             'Entre 26 e 30 anos': '#9B59B6',
