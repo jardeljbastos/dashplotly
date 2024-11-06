@@ -292,7 +292,7 @@ def create_map_graph(selected_sex='Todos'):
     # Criar o gráfico de mapa
     fig = px.choropleth(
         region_counts,
-        geojson="https://raw.githubusercontent.com/ciro-maciel/brasil-estados-json/main/estados.geojson",
+        geojson='/assets/estados.geojson',
         featureidkey="properties.sigla",
         locations='Região',
         color='Quantidade',
