@@ -189,7 +189,7 @@ def create_age_histogram(selected_sex='Todos'):
 
     # Criar os bins para as faixas etárias
     bins = [-1, 18, 21, 25, 30, 40, 50, 60, 70, float('inf')]
-    labels = ['Menor de 18 anos', 'Menor de 18 anos', 'Entre 18 e 21 anos', 'Entre 22 e 25 anos',
+    labels = ['Menor de 18 anos', 'Entre 18 e 21 anos', 'Entre 22 e 25 anos',
               'Entre 26 e 30 anos', 'Entre 31 e 40 anos', 'Entre 41 e 50 anos', 'Entre 51 e 60 anos',
               'Entre 61 e 70 anos', 'Maior de 70 anos']
 
