@@ -46,6 +46,16 @@ df['Sexo'] = df['TP_SEXO'].map(mapa_sexo)
 df['Cor/Raça'] = df['TP_COR_RACA'].map(mapa_cor_raca)
 df['Estado Civil'] = df['TP_ESTADO_CIVIL'].map(mapa_estado_civil)
 
+# Criar dicionário para mapear as unidades federativas às regiões
+mapa_regioes = {
+    'AC': 'Norte', 'AP': 'Norte', 'AM': 'Norte', 'PA': 'Norte', 'RO': 'Norte', 'RR': 'Norte', 'TO': 'Norte',
+    'AL': 'Nordeste', 'BA': 'Nordeste', 'CE': 'Nordeste', 'MA': 'Nordeste', 'PB': 'Nordeste', 'PE': 'Nordeste',
+    'PI': 'Nordeste', 'RN': 'Nordeste', 'SE': 'Nordeste',
+    'SP': 'Sudeste', 'RJ': 'Sudeste', 'MG': 'Sudeste', 'ES': 'Sudeste',
+    'DF': 'Centro-Oeste', 'GO': 'Centro-Oeste', 'MT': 'Centro-Oeste', 'MS': 'Centro-Oeste',
+    'PR': 'Sul', 'RS': 'Sul', 'SC': 'Sul'
+}
+
 # Função para criar o gráfico de sexo
 def create_sex_graph(selected_sex='Todos'):
     if selected_sex == 'Todos':
@@ -265,6 +275,42 @@ def create_age_histogram(selected_sex='Todos'):
 
     return fig
 
+# Classificar os candidatos por região
+df['Região'] = df['SG_UF_PROVA'].map(mapa_regioes)
+
+# Função para criar o gráfico de mapa
+def create_map_graph(selected_sex='Todos'):
+    if selected_sex == 'Todos':
+        filtered_df = df
+    else:
+        filtered_df = df[df['Sexo'] == selected_sex]
+    
+    # Contar o número de candidatos por região
+    region_counts = filtered_df['Região'].value_counts().reset_index()
+    region_counts.columns = ['Região', 'Quantidade']
+    
+    # Criar o gráfico de mapa
+    fig = px.choropleth(
+        region_counts,
+        geojson="https://raw.githubusercontent.com/ciro-maciel/brasil-estados-json/main/estados.geojson",
+        featureidkey="properties.sigla",
+        locations='Região',
+        color='Quantidade',
+        color_continuous_scale='Blues',
+        title=f'Distribuição de Candidatos por Região - ENEM 2023 ({selected_sex})',
+        labels={'Quantidade': 'Número de Candidatos'}
+    )
+    
+    fig.update_geos(fitbounds="locations", visible=False)
+    fig.update_layout(
+        margin={"r":0,"t":50,"l":0,"b":0},
+        plot_bgcolor='white',
+        paper_bgcolor='white',
+        font=dict(size=12)
+    )
+    
+    return fig
+
 # Layout da aplicação
 app.layout = html.Div(
     children=[
@@ -365,6 +411,11 @@ app.layout = html.Div(
                 id='grafico-idade',
                 figure=create_age_histogram(),
                 style={'height': '500px'}
+            ),
+            dcc.Graph(
+                id='grafico-mapa',
+                figure=create_map_graph(),
+                style={'height': '500px'}
             )
         ])
     ],
@@ -379,11 +430,12 @@ app.layout = html.Div(
     [Output('grafico-sexo', 'figure'),
      Output('grafico-raca', 'figure'),
      Output('grafico-estado-civil', 'figure'),
-     Output('grafico-idade', 'figure')],
+     Output('grafico-idade', 'figure'),
+     Output('grafico-mapa', 'figure')],
     Input('sex-dropdown', 'value')
 )
 def update_graphs(selected_sex):
-    return create_sex_graph(selected_sex), create_race_graph(selected_sex), create_civil_status_graph(selected_sex), create_age_histogram(selected_sex)
+    return create_sex_graph(selected_sex), create_race_graph(selected_sex), create_civil_status_graph(selected_sex), create_age_histogram(selected_sex), create_map_graph(selected_sex)
 
 # Configuração do servidor
 server = app.server
