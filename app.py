@@ -187,18 +187,47 @@ def create_age_histogram(selected_sex='Todos'):
     else:
         filtered_df = df[df['Sexo'] == selected_sex]
 
-    # Criar os bins para as faixas etárias
-    bins = [-1, 18, 21, 25, 30, 40, 50, 60, 70, float('inf')]
-    labels = ['Menor de 18 anos', 'Entre 18 e 21 anos', 'Entre 22 e 25 anos',
-              'Entre 26 e 30 anos', 'Entre 31 e 40 anos', 'Entre 41 e 50 anos', 'Entre 51 e 60 anos',
-              'Entre 61 e 70 anos', 'Maior de 70 anos']
+    # Criar função para mapear os valores para faixas etárias
+    def map_age_group(value):
+        if value in [1, 2]:
+            return 'Menor de 18 anos'
+        elif value in [3, 4, 5, 6]:
+            return 'Entre 18 e 21 anos'
+        elif value in [7, 8, 9, 10]:
+            return 'Entre 22 e 25 anos'
+        elif value == 11:
+            return 'Entre 26 e 30 anos'
+        elif value in [12, 13]:
+            return 'Entre 31 e 40 anos'
+        elif value in [14, 15]:
+            return 'Entre 41 e 50 anos'
+        elif value in [16, 17]:
+            return 'Entre 51 e 60 anos'
+        elif value in [18, 19]:
+            return 'Entre 61 e 70 anos'
+        elif value == 20:
+            return 'Maior de 70 anos'
+        return 'Outros'
 
     # Aplicar a classificação por faixa etária
-    filtered_df['Faixa Etária'] = pd.cut(filtered_df['TP_FAIXA_ETARIA'], bins=bins, labels=labels, ordered=True, include_lowest=True)
+    filtered_df['Faixa Etária'] = filtered_df['TP_FAIXA_ETARIA'].apply(map_age_group)
+
+    # Definir a ordem das faixas etárias
+    order = ['Menor de 18 anos', 'Entre 18 e 21 anos', 'Entre 22 e 25 anos',
+             'Entre 26 e 30 anos', 'Entre 31 e 40 anos', 'Entre 41 e 50 anos',
+             'Entre 51 e 60 anos', 'Entre 61 e 70 anos', 'Maior de 70 anos']
 
     # Contar a quantidade de candidatos por faixa etária
     age_counts = filtered_df['Faixa Etária'].value_counts().reset_index()
     age_counts.columns = ['Faixa Etária', 'Quantidade']
+    
+    # Ordenar as faixas etárias na ordem correta
+    age_counts['Faixa Etária'] = pd.Categorical(
+        age_counts['Faixa Etária'], 
+        categories=order, 
+        ordered=True
+    )
+    age_counts = age_counts.sort_values('Faixa Etária')
 
     # Criar o gráfico de histograma
     fig = px.bar(
@@ -220,7 +249,6 @@ def create_age_histogram(selected_sex='Todos'):
         },
         text='Quantidade'
     )
-
     fig.update_traces(textposition='outside')
     fig.update_layout(
         xaxis_title="Faixa Etária",
@@ -230,7 +258,6 @@ def create_age_histogram(selected_sex='Todos'):
         paper_bgcolor='white',
         font=dict(size=12)
     )
-
     return fig
 
 # Layout da aplicação
