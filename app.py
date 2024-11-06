@@ -248,7 +248,7 @@ def create_age_histogram(selected_sex='Todos'):
             'Entre 61 e 70 anos': '#45B39D',
             'Maior de 70 anos': '#D35400'
         },
-        text='Quantidade',
+        text=age_counts['Quantidade'],
         textposition='auto'
     )
 
