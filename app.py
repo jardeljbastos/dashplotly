@@ -346,8 +346,8 @@ app.layout = html.Div(
 @callback(
     [Output('grafico-sexo', 'figure'),
      Output('grafico-raca', 'figure'),
-     Output('grafico-estado-civil', 'figure')],
-     Output('grafico-idade', 'figure'),
+     Output('grafico-estado-civil', 'figure'),
+     Output('grafico-idade', 'figure')],
     Input('sex-dropdown', 'value')
 )
 def update_graphs(selected_sex):
