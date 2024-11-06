@@ -194,7 +194,7 @@ def create_age_histogram(selected_sex='Todos'):
               'Entre 61 e 70 anos', 'Maior de 70 anos']
 
     # Aplicar a classificação por faixa etária
-    filtered_df['Faixa Etária'] = pd.cut(filtered_df['TP_FAIXA_ETARIA'], bins=bins, labels=labels)
+    filtered_df['Faixa Etária'] = pd.cut(filtered_df['TP_FAIXA_ETARIA'], bins=bins, labels=labels, ordered=True, include_lowest=True)
 
     # Contar a quantidade de candidatos por faixa etária
     age_counts = filtered_df['Faixa Etária'].value_counts().reset_index()
