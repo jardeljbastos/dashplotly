@@ -187,7 +187,7 @@ def create_age_histogram(selected_sex='Todos'):
     else:
         filtered_df = df[df['Sexo'] == selected_sex]
 
-    # Criar função para mapear os valores para faixas etárias
+    # Função de mapeamento das faixas etárias
     def map_age_group(value):
         if value in [1, 2]:
             return 'Menor de 18 anos'
@@ -220,24 +220,25 @@ def create_age_histogram(selected_sex='Todos'):
     # Contar a quantidade de candidatos por faixa etária
     age_counts = filtered_df['Faixa Etária'].value_counts().reset_index()
     age_counts.columns = ['Faixa Etária', 'Quantidade']
-    
+
     # Ordenar as faixas etárias na ordem correta
     age_counts['Faixa Etária'] = pd.Categorical(
-        age_counts['Faixa Etária'], 
-        categories=order, 
+        age_counts['Faixa Etária'],
+        categories=order,
         ordered=True
     )
     age_counts = age_counts.sort_values('Faixa Etária')
 
-    # Criar o gráfico de histograma
+    # Criar o gráfico de histograma empilhado na horizontal
     fig = px.bar(
         age_counts,
-        x='Faixa Etária',
-        y='Quantidade',
+        x='Quantidade',
+        y='Faixa Etária',
+        orientation='h',
         title=f'Distribuição de Candidatos por Faixa Etária - ENEM 2023 ({selected_sex})',
         color='Faixa Etária',
         color_discrete_map={
-            'Menor de 18 anos': '#8B4513',
+            'Menor de 18 anos': '#3498DB',
             'Entre 18 e 21 anos': '#2ECC71',
             'Entre 22 e 25 anos': '#E74C3C',
             'Entre 26 e 30 anos': '#9B59B6',
@@ -247,17 +248,21 @@ def create_age_histogram(selected_sex='Todos'):
             'Entre 61 e 70 anos': '#45B39D',
             'Maior de 70 anos': '#D35400'
         },
-        text='Quantidade'
+        text='Quantidade',
+        textposition='auto'
     )
-    fig.update_traces(textposition='outside')
+
     fig.update_layout(
-        xaxis_title="Faixa Etária",
-        yaxis_title="Número de Candidatos",
-        showlegend=False,
+        xaxis_title="Número de Candidatos",
+        yaxis_title="Faixa Etária",
+        bargap=0.1,
+        bargroupgap=0.1,
+        font=dict(size=12),
         plot_bgcolor='white',
         paper_bgcolor='white',
-        font=dict(size=12)
+        margin=dict(l=200, r=50, t=80, b=50)
     )
+
     return fig
 
 # Layout da aplicação
