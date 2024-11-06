@@ -328,6 +328,11 @@ app.layout = html.Div(
                 id='grafico-estado-civil',
                 figure=create_civil_status_graph(),
                 style={'height': '500px'}
+            ),
+           dcc.Graph(
+                id='grafico-idade',
+                figure=create_age_histogram(),
+                style={'height': '500px'}
             )
         ])
     ],
@@ -342,10 +347,11 @@ app.layout = html.Div(
     [Output('grafico-sexo', 'figure'),
      Output('grafico-raca', 'figure'),
      Output('grafico-estado-civil', 'figure')],
+     Output('grafico-idade', 'figure'),
     Input('sex-dropdown', 'value')
 )
 def update_graphs(selected_sex):
-    return create_sex_graph(selected_sex), create_race_graph(selected_sex), create_civil_status_graph(selected_sex)
+    return create_sex_graph(selected_sex), create_race_graph(selected_sex), create_civil_status_graph(selected_sex), create_age_histogram(selected_sex)
 
 # Configuração do servidor
 server = app.server
