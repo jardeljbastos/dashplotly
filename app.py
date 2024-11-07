@@ -268,6 +268,10 @@ def create_age_histogram(selected_sex='Todos'):
     return fig
 
 def create_uf_map(data):
+    # Agrupar os dados por Unidade Federativa e contar a quantidade
+    uf_counts = data['SG_UF_PROVA'].value_counts().reset_index()
+    uf_counts.columns = ['SG_UF_PROVA', 'Quantidade']
+    
     # Dados de referência dos estados do Brasil
     br_states = go.Choroplethmapbox(
         geojson='https://raw.githubusercontent.com/deldersveld/topojson/master/countries/brazil-states.json',
@@ -276,7 +280,9 @@ def create_uf_map(data):
         colorscale='Inferno',
         colorbar_title='Quantidade',
         marker_opacity=0.5,
-        marker_line_width=0.5
+        marker_line_width=0.5,
+        text=uf_counts['Quantidade'],
+        hovertemplate='<b>%{text}</b><br>Unidade Federativa: %{location}',
     )
     
     # Configuração do mapa
