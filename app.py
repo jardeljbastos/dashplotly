@@ -269,41 +269,69 @@ def create_age_histogram(selected_sex='Todos'):
     return fig
 
 def create_uf_map(data):
-    # Carregar o arquivo GeoJSON dos estados do Brasil
-    #with open('data/brazil-states.geojson', 'r') as f:
-     #   brazil_states = json.load(f)
-
     # Agrupar os dados por Unidade Federativa e contar a quantidade
     uf_counts = data['SG_UF_PROVA'].value_counts().reset_index()
-    uf_counts.columns = ['SG_UF_PROVA', 'Quantidade']
+    uf_counts.columns = ['UF', 'Quantidade']
+    
+    # URL do GeoJSON dos estados brasileiros
+    geojson_url = "https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/brazil-states.geojson"
+    
+    # Criar o mapa
+    fig = go.Figure()
 
-    # Criar o mapa coroplético
-    fig = go.Figure(go.Choroplethmapbox(
-        geojson="https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/brazil-states.geojson",
-        locations=uf_counts['SG_UF_PROVA'],
+    # Adicionar o choropleth mapbox
+    fig.add_trace(go.Choroplethmapbox(
+        geojson=geojson_url,
+        featureidkey='properties.id',  # Especifica onde encontrar o ID no GeoJSON
+        locations=uf_counts['UF'],     # Deve corresponder ao ID no GeoJSON
         z=uf_counts['Quantidade'],
-        colorscale='Inferno',
+        colorscale=[
+            [0, '#FFE5E5'],            # Cor mais clara
+            [0.2, '#FFB6B6'],
+            [0.4, '#FF8787'],
+            [0.6, '#FF5858'],
+            [0.8, '#FF2929'],
+            [1, '#FF0000']             # Cor mais escura
+        ],
         colorbar=dict(
-            title='Quantidade de Candidatos',
-            thicknessmode="pixels", thickness=30,
-            lenmode="pixels", len=400,
-            y=0.5, yanchor="middle"
+            title=dict(
+                text='Quantidade<br>de Candidatos',
+                font=dict(size=14)
+            ),
+            thickness=20,
+            len=0.5,
+            tickformat=',d'  # Formato com separador de milhares
         ),
-        marker_opacity=0.6,
-        marker_line_width=0.5,
-        text=uf_counts['Quantidade'],
-        hovertemplate='<b>%{text}</b><br>Unidade Federativa: %{location}',
+        marker=dict(
+            opacity=0.7,
+            line_width=1
+        ),
+        text=uf_counts['Quantidade'],  # Texto para o hover
+        hovertemplate='<b>%{location}</b><br>' +
+                     'Candidatos: %{text:,.0f}<extra></extra>'
     ))
 
-    # Configuração do mapa
+    # Atualizar o layout
     fig.update_layout(
-        mapbox_style="carto-positron",
-        mapbox_zoom=4,
-        mapbox_center={"lat": -14.235004, "lon": -51.92528},
-        margin={"r":0,"t":0,"l":0,"b":0}
+        title=dict(
+            text='Distribuição de Candidatos por Estado',
+            x=0.5,
+            y=0.95,
+            font=dict(size=16)
+        ),
+        mapbox=dict(
+            style='carto-positron',
+            zoom=3,
+            center=dict(lat=-15.8, lon=-47.9)  # Centralizado em Brasília
+        ),
+        margin=dict(l=0, r=0, t=30, b=0),
+        height=700,  # Aumentar altura do mapa
+        paper_bgcolor='white',
+        plot_bgcolor='white'
     )
 
     return fig
+    
 # Layout da aplicação
 app.layout = html.Div(
     children=[
