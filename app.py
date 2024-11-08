@@ -4,6 +4,7 @@ from dash import Dash, html, dcc, callback, Input, Output
 from flask import Flask
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+import json
 
 # Criar o servidor Flask
 server = Flask(__name__)
@@ -268,35 +269,41 @@ def create_age_histogram(selected_sex='Todos'):
     return fig
 
 def create_uf_map(data):
+    # Carregar o arquivo GeoJSON dos estados do Brasil
+    with open('data/brazil-states.geojson', 'r') as f:
+        brazil_states = json.load(f)
+
     # Agrupar os dados por Unidade Federativa e contar a quantidade
     uf_counts = data['SG_UF_PROVA'].value_counts().reset_index()
     uf_counts.columns = ['SG_UF_PROVA', 'Quantidade']
-    geojson = "mapa_idhm_uf.geojson"
-    
-    # Dados de referência dos estados do Brasil
-    br_states = go.Choroplethmapbox(
-        geojson=geojson,
-        locations=data['SG_UF_PROVA'],
-        z=data.groupby('SG_UF_PROVA').size(),
+
+    # Criar o mapa coroplético
+    fig = go.Figure(go.Choroplethmapbox(
+        geojson=brazil_states,
+        locations=uf_counts['SG_UF_PROVA'],
+        z=uf_counts['Quantidade'],
         colorscale='Inferno',
-        colorbar_title='Quantidade',
-        marker_opacity=0.5,
+        colorbar=dict(
+            title='Quantidade de Candidatos',
+            thicknessmode="pixels", thickness=30,
+            lenmode="pixels", len=400,
+            y=0.5, yanchor="middle"
+        ),
+        marker_opacity=0.6,
         marker_line_width=0.5,
         text=uf_counts['Quantidade'],
         hovertemplate='<b>%{text}</b><br>Unidade Federativa: %{location}',
-    )
-    
+    ))
+
     # Configuração do mapa
-    layout = go.Layout(
+    fig.update_layout(
         mapbox_style="carto-positron",
         mapbox_zoom=4,
         mapbox_center={"lat": -14.235004, "lon": -51.92528},
         margin={"r":0,"t":0,"l":0,"b":0}
     )
 
-    fig = go.Figure(data=[br_states], layout=layout)
     return fig
-
 # Layout da aplicação
 app.layout = html.Div(
     children=[
