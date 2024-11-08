@@ -271,10 +271,11 @@ def create_uf_map(data):
     # Agrupar os dados por Unidade Federativa e contar a quantidade
     uf_counts = data['SG_UF_PROVA'].value_counts().reset_index()
     uf_counts.columns = ['SG_UF_PROVA', 'Quantidade']
+    geojson = "mapa_idhm_uf.geojson"
     
     # Dados de referência dos estados do Brasil
     br_states = go.Choroplethmapbox(
-        geojson='https://raw.githubusercontent.com/deldersveld/topojson/master/countries/brazil-states.json',
+        geojson=geojson,
         locations=data['SG_UF_PROVA'],
         z=data.groupby('SG_UF_PROVA').size(),
         colorscale='Inferno',
