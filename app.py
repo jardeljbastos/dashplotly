@@ -269,7 +269,7 @@ def create_age_histogram(selected_sex='Todos'):
     return fig
 
 def create_uf_map(data):
-    # Agrupar os dados por Unidade Federativa e contar a quantidade
+    # Agrupar os dados por Unidade Federativa (usando SG_UF_PROVA) e contar a quantidade
     uf_counts = data['SG_UF_PROVA'].value_counts().reset_index()
     uf_counts.columns = ['UF', 'Quantidade']
     
@@ -282,17 +282,12 @@ def create_uf_map(data):
     # Adicionar o choropleth mapbox
     fig.add_trace(go.Choroplethmapbox(
         geojson=geojson_url,
-        featureidkey='properties.id',  # Especifica onde encontrar o ID no GeoJSON
-        locations=uf_counts['UF'],     # Deve corresponder ao ID no GeoJSON
+        featureidkey='properties.sigla',      # Campo no GeoJSON que contém a sigla do estado
+        locations=uf_counts['UF'],            # Coluna do DataFrame com as siglas dos estados
         z=uf_counts['Quantidade'],
-        colorscale=[
-            [0, '#FFE5E5'],            # Cor mais clara
-            [0.2, '#FFB6B6'],
-            [0.4, '#FF8787'],
-            [0.6, '#FF5858'],
-            [0.8, '#FF2929'],
-            [1, '#FF0000']             # Cor mais escura
-        ],
+        colorscale='Reds',                    # Escala de cores em tons de vermelho
+        zmin=uf_counts['Quantidade'].min(),   # Valor mínimo para a escala de cores
+        zmax=uf_counts['Quantidade'].max(),   # Valor máximo para a escala de cores
         colorbar=dict(
             title=dict(
                 text='Quantidade<br>de Candidatos',
@@ -306,9 +301,8 @@ def create_uf_map(data):
             opacity=0.7,
             line_width=1
         ),
-        text=uf_counts['Quantidade'],  # Texto para o hover
-        hovertemplate='<b>%{location}</b><br>' +
-                     'Candidatos: %{text:,.0f}<extra></extra>'
+        hovertemplate='<b>Estado: %{location}</b><br>' +
+                     'Candidatos: %{z:,.0f}<extra></extra>'
     ))
 
     # Atualizar o layout
@@ -321,13 +315,21 @@ def create_uf_map(data):
         ),
         mapbox=dict(
             style='carto-positron',
-            zoom=3,
-            center=dict(lat=-15.8, lon=-47.9)  # Centralizado em Brasília
+            zoom=2.5,
+            center=dict(lat=-15.8, lon=-47.9),  # Centralizado em Brasília
+            pitch=0
         ),
         margin=dict(l=0, r=0, t=30, b=0),
-        height=700,  # Aumentar altura do mapa
+        height=600,
         paper_bgcolor='white',
         plot_bgcolor='white'
+    )
+
+    fig.update_layout(
+        mapbox=dict(
+            bearing=0,
+            accesstoken='pk.eyJ1IjoibHVjYXNvbGl2ZWlyYWRzIiwiYSI6ImNsc2theHc3dzBndmsya3J0Y2x2Ymh2bzkifQ.V9g9FHCjxM5TguELkDO3pA'
+        )
     )
 
     return fig
