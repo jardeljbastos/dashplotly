@@ -270,8 +270,8 @@ def create_age_histogram(selected_sex='Todos'):
 
 def create_uf_map(data):
     # Carregar o arquivo GeoJSON dos estados do Brasil
-    with open('data/brazil-states.geojson', 'r') as f:
-        brazil_states = json.load(f)
+    #with open('data/brazil-states.geojson', 'r') as f:
+     #   brazil_states = json.load(f)
 
     # Agrupar os dados por Unidade Federativa e contar a quantidade
     uf_counts = data['SG_UF_PROVA'].value_counts().reset_index()
@@ -279,7 +279,7 @@ def create_uf_map(data):
 
     # Criar o mapa coroplético
     fig = go.Figure(go.Choroplethmapbox(
-        geojson=brazil_states,
+        geojson="https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/brazil-states.geojson",
         locations=uf_counts['SG_UF_PROVA'],
         z=uf_counts['Quantidade'],
         colorscale='Inferno',
